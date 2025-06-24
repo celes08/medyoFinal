@@ -369,27 +369,30 @@ signupFormElement.addEventListener("submit", async (e) => {
 })
 
 // Forgot password functionality
-document.getElementById("forgotPassword").addEventListener("click", (e) => {
-  e.preventDefault()
-
-  const email = document.getElementById("email").value
-
-  if (!email) {
-    showNotification("Please enter your email address first", true)
-    return
-  }
-
-  if (!validateEmail(email)) {
-    showNotification("Please enter a valid email address", true)
-    return
-  }
-
-  // Store the email in sessionStorage to use it on the forgot password page
-  sessionStorage.setItem("resetEmail", email)
-
-  // Navigate to forgot password page
-  window.location.href = "forgot-password.html"
-})
+const forgotPasswordLink = document.getElementById("forgotPassword");
+if (forgotPasswordLink) {
+    forgotPasswordLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        const email = document.getElementById("loginEmail").value;
+        // Validate email function
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        if (!email) {
+            alert("Please enter your email address first");
+            return;
+        }
+        if (!validateEmail(email)) {
+            alert("Please enter a valid email address");
+            return;
+        }
+        // Store the email in sessionStorage to use it on the forgot password page
+        sessionStorage.setItem("resetEmail", email);
+        // Navigate to forgot password page
+        window.location.href = "forgot-password.php";
+    });
+}
 
 // Load remembered email on page load
 window.addEventListener("load", () => {

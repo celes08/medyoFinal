@@ -41,7 +41,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signupButton'])) {
     if (empty($dateOfBirth)) $errors[] = "Date of birth is required.";
     if (empty($studentNumber)) $errors[] = "Student number is required.";
     if (empty($department)) $errors[] = "Department is required.";
-    if (empty($password) || strlen($password) < 6) $errors[] = "Password must be at least 6 characters.";
+    // Password validation
+    if (empty($password)) {
+        $errors[] = "Password is required.";
+    } else {
+        if (strlen($password) < 8 || strlen($password) > 16) {
+            $errors[] = "Password must be 8-16 characters.";
+        }
+        if (!preg_match('/[A-Z]/', $password)) {
+            $errors[] = "Password must contain at least one uppercase letter.";
+        }
+        if (!preg_match('/[a-z]/', $password)) {
+            $errors[] = "Password must contain at least one lowercase letter.";
+        }
+        if (!preg_match('/[0-9]/', $password)) {
+            $errors[] = "Password must contain at least one number.";
+        }
+        if (!preg_match('/[!@#$%^&*()_+\-=[\]{};\'\":\\|,.<>/?]/', $password)) {
+            $errors[] = "Password must contain at least one special character.";
+        }
+    }
     if ($password !== $confirmPassword) $errors[] = "Passwords do not match.";
     if (empty($username)) $errors[] = "Username is required.";
     if (!preg_match('/^[A-Za-z0-9_]{3,20}$/', $username)) $errors[] = "Username must be 3-20 characters, letters, numbers, or underscores only.";
@@ -454,6 +473,9 @@ if (!empty($errors) && isset($_POST['loginButton'])) {
                         <label for="loginPassword">Password</label>
                         <input type="password" id="loginPassword" name="loginPassword" required>
                     </div>
+                    <div style="text-align:right; margin-bottom:10px;">
+                        <a href="#" id="forgotPassword" style="font-size:0.98em; color:#1976d2; text-decoration:underline;">Forgot Password?</a>
+                    </div>
                     <button type="submit" name="loginButton" class="login-button">Login</button>
                 </form>
             </div>
@@ -502,7 +524,7 @@ if (!empty($errors) && isset($_POST['loginButton'])) {
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="password">Password (min 6 chars)</label>
+                        <label for="password">Password (min 8-16 chars, uppercase, lowercase, number, special character)</label>
                         <input type="password" id="password" name="password" required>
                     </div>
                     <div class="form-group">
@@ -548,6 +570,38 @@ if (!empty($errors) && isset($_POST['loginButton'])) {
                 signupForm.classList.remove('hidden');
                 loginForm.classList.add('hidden');
             });
+
+            // Forgot password functionality
+            const forgotPasswordLink = document.getElementById("forgotPassword");
+            if (forgotPasswordLink) {
+                forgotPasswordLink.addEventListener("click", (e) => {
+                    e.preventDefault();
+
+                    const email = document.getElementById("loginEmail").value;
+
+                    // Validate email function
+                    function validateEmail(email) {
+                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        return emailRegex.test(email);
+                    }
+
+                    if (!email) {
+                        alert("Please enter your email address first");
+                        return;
+                    }
+
+                    if (!validateEmail(email)) {
+                        alert("Please enter a valid email address");
+                        return;
+                    }
+
+                    // Store the email in sessionStorage to use it on the forgot password page
+                    sessionStorage.setItem("resetEmail", email);
+
+                    // Navigate to forgot password page
+                    window.location.href = "forgot-password.php";
+                });
+            }
         });
     </script>
 </body>

@@ -1019,6 +1019,51 @@ $show_post_modal = isset($_POST['showPostModal']) || isset($_POST['submitPost'])
         document.getElementById('commentModalForm').reset();
     }
     </script>
+    <script src="post-modal.js"></script>
+
+    <!-- Logout Confirmation Modal -->
+    <div class="modal-overlay" id="logoutModal" style="display:none;">
+      <div class="modal-content" style="max-width:350px;text-align:center;">
+        <div class="modal-header">
+          <h2>Confirm Logout</h2>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to log out?</p>
+          <div style="margin-top:24px;display:flex;justify-content:center;gap:16px;">
+            <button id="confirmLogoutBtn" class="post-submit-btn" style="background:#b91c1c;">Log Out</button>
+            <button id="cancelLogoutBtn" class="post-submit-btn" style="background:#6c757d;">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const logoutLink = document.querySelector('a[href="index.php"]');
+      const logoutModal = document.getElementById('logoutModal');
+      const confirmBtn = document.getElementById('confirmLogoutBtn');
+      const cancelBtn = document.getElementById('cancelLogoutBtn');
+      if (logoutLink && logoutModal && confirmBtn && cancelBtn) {
+        logoutLink.addEventListener('click', function(e) {
+          e.preventDefault();
+          logoutModal.style.display = 'flex';
+          logoutModal.classList.add('active');
+        });
+        cancelBtn.addEventListener('click', function() {
+          logoutModal.style.display = 'none';
+          logoutModal.classList.remove('active');
+        });
+        logoutModal.addEventListener('click', function(e) {
+          if (e.target === logoutModal) {
+            logoutModal.style.display = 'none';
+            logoutModal.classList.remove('active');
+          }
+        });
+        confirmBtn.addEventListener('click', function() {
+          window.location.href = 'logout.php';
+        });
+      }
+    });
+    </script>
 </body>
 </html>
 <?php ob_end_flush(); ?>

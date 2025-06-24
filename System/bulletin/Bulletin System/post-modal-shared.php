@@ -178,12 +178,13 @@ $show_post_modal = isset($_POST['showPostModal']) || isset($_POST['submitPost'])
                 
                 <div class="form-actions">
                     <div class="action-buttons">
-                        <button type="button" class="action-btn" title="Add Image" disabled>
+                        <button type="button" class="action-btn" id="insertImageBtn" title="Add Image">
                             <i class="fas fa-image"></i>
                         </button>
-                        <button type="button" class="action-btn" title="Add Link" disabled>
+                        <button type="button" class="action-btn" id="insertLinkBtn" title="Add Link">
                             <i class="fas fa-link"></i>
                         </button>
+                        <input type="file" id="imageUploadInput" accept="image/*" style="display:none;" />
                     </div>
                     
                     <div class="form-options">
@@ -203,64 +204,4 @@ $show_post_modal = isset($_POST['showPostModal']) || isset($_POST['submitPost'])
     </div>
 </div>
 
-<script>
-// Post modal functionality - OPTIMIZED VERSION
-document.addEventListener('DOMContentLoaded', function() {
-    // Only add event listeners if they haven't been added already
-    if (window.postModalInitialized) {
-        return;
-    }
-    window.postModalInitialized = true;
-    
-    // Show post modal when post button is clicked
-    const postButtons = document.querySelectorAll('.post-button');
-    postButtons.forEach(button => {
-        // Check if listener already exists
-        if (!button.hasAttribute('data-modal-listener')) {
-            button.setAttribute('data-modal-listener', 'true');
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                const modal = document.getElementById('postModal');
-                if (modal) {
-                    modal.classList.add('active');
-                    modal.style.display = 'flex';
-                }
-            });
-        }
-    });
-
-    // Close modal when clicking outside
-    const modalOverlays = document.querySelectorAll('.modal-overlay');
-    modalOverlays.forEach(overlay => {
-        if (!overlay.hasAttribute('data-close-listener')) {
-            overlay.setAttribute('data-close-listener', 'true');
-            overlay.addEventListener('click', function(e) {
-                if (e.target === this) {
-                    this.classList.remove('active');
-                    this.style.display = 'none';
-                }
-            });
-        }
-    });
-
-    // Close modal when clicking close button
-    const closeButtons = document.querySelectorAll('.modal-close');
-    closeButtons.forEach(button => {
-        if (!button.hasAttribute('data-close-listener')) {
-            button.setAttribute('data-close-listener', 'true');
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                const modal = this.closest('.modal-overlay');
-                if (modal) {
-                    modal.classList.remove('active');
-                    modal.style.display = 'none';
-                }
-            });
-        }
-    });
-});
-</script>
 <?php ob_end_flush(); ?> 

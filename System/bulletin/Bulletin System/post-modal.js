@@ -32,6 +32,10 @@ window.openModal = () => {
     const modalClose = document.getElementById("modalClose")
     const dashboardContainer = document.getElementById("dashboardContainer")
     const postForm = document.getElementById("postForm")
+    const insertLinkBtn = document.getElementById("insertLinkBtn");
+    const insertImageBtn = document.getElementById("insertImageBtn");
+    const imageUploadInput = document.getElementById("imageUploadInput");
+    const postContent = document.getElementById("postContent");
   
     // Open modal when post button is clicked
     if (postButton && !postButton.hasAttribute("data-main-listener")) {
@@ -324,5 +328,57 @@ window.openModal = () => {
       this.style.height = "auto"
       this.style.height = this.scrollHeight + "px"
     })
+  
+    if (insertLinkBtn && postContent) {
+      insertLinkBtn.addEventListener("click", () => {
+        const url = prompt("Enter the URL to insert:");
+        if (url && /^https?:\/\//.test(url)) {
+          insertAtCursor(postContent, `[${url}](${url})`);
+        } else if (url) {
+          alert("Please enter a valid URL starting with http:// or https://");
+        }
+      });
+    }
+  
+    if (insertImageBtn && imageUploadInput && postContent) {
+      insertImageBtn.addEventListener("click", () => {
+        imageUploadInput.value = "";
+        imageUploadInput.click();
+      });
+      imageUploadInput.addEventListener("change", async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (!file.type.startsWith("image/")) {
+          alert("Please select an image file.");
+          return;
+        }
+        const formData = new FormData();
+        formData.append("post_image", file);
+        try {
+          const res = await fetch("post_image_upload.php", {
+            method: "POST",
+            body: formData
+          });
+          const data = await res.json();
+          if (data.success && data.url) {
+            insertAtCursor(postContent, `![image](${data.url})`);
+          } else {
+            alert(data.error || "Image upload failed.");
+          }
+        } catch (err) {
+          alert("Image upload failed.");
+        }
+      });
+    }
+  
+    function insertAtCursor(textarea, text) {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const before = textarea.value.substring(0, start);
+      const after = textarea.value.substring(end);
+      textarea.value = before + text + after;
+      textarea.selectionStart = textarea.selectionEnd = start + text.length;
+      textarea.focus();
+    }
   })
   
